@@ -14,25 +14,30 @@ void verifyNumberOfThreads(int numberOfThreads)
 }
 
 // Função que verifica o número de linhas de um arquivo para declarar depois no malloc
-int contNumberOfLines(char *fileName)
+int contNumberOfLines(char **inputFile, int contInputFile)
 {
     char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
     int numberOfLines = 0; // Variável para armazenar a quantidade de elementos lidos dos arquivos de entrada
 
-    FILE *arq = fopen(fileName, "r");
-    if(arq == NULL)
+    for(int i = 0; i < contInputFile; i++)
     {
-        printf("Erro ao abrir o arquivo!\n");
-        return -1;
-    }
+        FILE *arq = fopen(inputFile[i], "r");
+        
+        if(arq == NULL)
+        {
+            printf("Erro ao abrir arquivo %s!\n", inputFile[i]);
+            continue;
+        }
 
-    // Ler cada linha e incrementar a variável numberOfLines
-    while(fgets(buffer, sizeof(buffer), arq) != NULL)
-    {
-        numberOfLines++;
-    }
+        // Le cada linha do arquivo e incrementa em numberOfLines
+        while(fgets(buffer, sizeof(buffer), arq) != NULL)
+        {
+            numberOfLines++;
+        }
 
-    fclose(arq);
+        fclose(arq);
+    }
+    
     return numberOfLines;
 }
 

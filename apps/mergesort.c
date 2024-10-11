@@ -8,6 +8,7 @@ int main(int argc, char *argv[])
 {
     int option;
     FILE *outputFile;
+    int totalNumberOfLines = 0;
     int numberOfThreads;
     int contInputFile = 0;
 
@@ -26,19 +27,13 @@ int main(int argc, char *argv[])
                 if (inputFile == NULL)
                     return 1; // Erro ao alocar memória
 
-                printf("Arquivos de entrada recebidos: \n");
-                for (int i = 0; i < contInputFile; i++)
-                {
-                    printf("%s\n", inputFile[i]);
-                }
+                totalNumberOfLines = contNumberOfLines(inputFile, contInputFile); // Variável que armazena o total de linhas nos arquivos de entrada
                 break;
+            default:
+                printf("Linha de comando de entrada incorreta.\n");
+                return 1;
             }
         }
-    }
-    else
-    {
-        printf("Linha de comando de entrada incorreta.\n");
-        return 1;
     }
 
     return 0;
