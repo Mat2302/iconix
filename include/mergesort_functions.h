@@ -1,9 +1,7 @@
 /* ***** Declaração de Funções ***** */
 #include <stdio.h> // Biblioteca padrão de i/o para usar arquivos FILE*
 
-void readFile(char *fileName);
-int contNumberOfLines(char **inputFiles, int contInputFile);
 void verifyNumberOfThreads(int numberOfThreads);
-void sortFile(char *fileName, int *numberLines, char *outputFile);
+int contNumberOfLines(char **inputFiles, int contInputFile);
 char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *outputFile);
 int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNumberOfLines);

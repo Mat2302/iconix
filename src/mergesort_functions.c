@@ -41,45 +41,6 @@ int contNumberOfLines(char **inputFile, int contInputFile)
     return numberOfLines;
 }
 
-// Função que ordena um arquivo e coloca no arquivo de saida
-void sortFile(char *fileName, int *numberLines, char *outputFile)
-{
-    FILE *arq;
-    arq = fopen(fileName, "r");
-
-    if (arq == NULL)
-    {
-        printf("Erro ao abrir o arquivo.\n");
-    }
-
-    int *vetor = (int *)malloc(*numberLines * sizeof(int));
-
-    for (int i = 0; i < *numberLines; i++)
-    {
-        fscanf(arq, "%d", &vetor[i]);
-    }
-
-    fclose(arq);
-
-    //mergeSort(vetor, 0, *numberLines - 1);
-
-    arq = fopen(outputFile, "w");
-
-    for (int i = 0; i < *numberLines; i++)
-    {
-        fprintf(arq, "%d\n", vetor[i]);
-    }
-
-    fclose(arq);
-}
-
-// Função para ler o arquivo de entrada
-void readFile(char *fileName)
-{
-    FILE *arq;
-    arq = fopen(fileName, "a");
-}
-
 // Função que armazena o nome dos arquivos de entrada
 char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *outputFile)
 {
