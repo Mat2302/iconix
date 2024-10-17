@@ -28,6 +28,9 @@ int main(int argc, char *argv[])
                     return 1; // Erro ao alocar memória
 
                 totalNumberOfLines = contNumberOfLines(inputFile, contInputFile); // Variável que armazena o total de linhas nos arquivos de entrada
+
+                printf("%d\n", totalNumberOfLines);
+                
                 break;
             default:
                 printf("Linha de comando de entrada incorreta.\n");
