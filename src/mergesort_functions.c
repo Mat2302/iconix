@@ -109,3 +109,48 @@ char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *ou
 
     return inputFile; // Retorna o arquivo criado dinamicamente com o nome dos arquivos de entrada
 }
+
+int **vetoresOfNumbers(char **inputFile, int contInputFile, int totalNumberOfLines)
+{
+    int **vetores = (int **)malloc(contInputFile * sizeof(int *)); // Aloca memória para a quantidade de arquivos de entrada
+    if(vetores == NULL)
+    {
+        printf("Erro ao alocar memória dinamicamente!\n");
+        return NULL;
+    }
+
+    // Loop para cada arquivo de entrada
+    for(int i = 0; i < contInputFile; i++)
+    {
+        FILE *arq = fopen(inputFile[i], "r");
+        if(arq == NULL)
+        {
+            printf("Erro ao abrir o arquivo %s!\n", inputFile[i]);
+            continue;
+        }
+
+        // Aloca memória para as linhas de cada arquivo
+        vetores[i] = (int *)malloc(totalNumberOfLines * sizeof(int)); 
+        if(vetores[i] == NULL)
+        {
+            printf("Erro ao alocar memória dinamicamente!\n");
+            fclose(arq);
+            return NULL;
+        }
+
+        // Lê os números do arquivo e armazena no vetor correspondente
+        for(int j = 0; j < totalNumberOfLines; j++)
+        {
+            if(fscanf(arq, "%d", &vetores[i][j]) != 1) 
+            {
+                // Caso não consiga ler um número corretamente, encerra a leitura
+                printf("Erro ao ler o número da linha %d do arquivo %s\n", j + 1, inputFile[i]);
+                break;
+            }
+        }
+
+        fclose(arq);
+    }
+
+    return vetores; // Retorna o vetor de vetores preenchido
+}
