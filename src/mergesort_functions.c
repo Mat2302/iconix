@@ -73,6 +73,7 @@ char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *ou
 
 int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNumberOfLines)
 {
+    int index = 0; // Index que armazena os valores do vetor
     int *vectorWithInputValues = (int *)malloc(totalNumberOfLines * sizeof(int)); // Vetor para alocar os valores de entrada
 
     if (vectorWithInputValues == NULL)
@@ -93,13 +94,28 @@ int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNum
         }
 
         // Lê os valores dos arquivos de entrada e armazena no vetor dinâmico
-        for(int j = 0; j != EOF; j++)
+        while(fscanf(arq, "%d", &vectorWithInputValues[index]) == 1)
         {
-            fscanf(arq, "%d", &vectorWithInputValues[j]);
+            index++;
         }
 
         fclose(arq);
     }
 
     return vectorWithInputValues; // Retorna o vetor de vetores preenchido
+}
+
+// Adiciona os valores dos arquivos de entrada no arquivo de saida
+void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char* nameOfOutputFile)
+{
+    FILE* arq;
+    arq = fopen(nameOfOutputFile, "w+");
+
+    // Percorre o vetor e printa o valor no arquivo de saída
+    for(int i = 0; i < totalNumberOfLines; i++)
+    {
+        fprintf(arq, "%d\n", inputNumbers[i]);
+    }
+
+    fclose(arq);
 }

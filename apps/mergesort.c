@@ -24,13 +24,13 @@ int main(int argc, char *argv[])
             case 'o':
                 outputFile = (FILE *)optarg;
                 char **inputFile = saveNameOfInputFiles(&contInputFile, argc, argv, outputFile);
+                outputFile = fopen(optarg, "w+"); // Cria arquivo de saída com o nome digitado na linha de comando
                 if (inputFile == NULL)
                     return 1; // Erro ao alocar memória
 
                 totalNumberOfLines = contNumberOfLines(inputFile, contInputFile); // Variável que armazena o total de linhas nos arquivos de entrada
-
-                printf("%d\n", totalNumberOfLines);
-                
+                int *vector = vectorWithAllInputNumbers(inputFile, contInputFile, totalNumberOfLines); // Vetor que armazena todos os valores do arquivo de entrada
+                addInputNumbersToOutputFile(vector, totalNumberOfLines, optarg); // Adiciona os valores no vetor de saída
                 break;
             default:
                 printf("Linha de comando de entrada incorreta.\n");
