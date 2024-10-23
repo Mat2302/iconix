@@ -118,4 +118,31 @@ void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char
     }
 
     fclose(arq);
+
+}
+
+//Ordernar valores em ordem crescente
+void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutputFile){
+    int temp = 1000000000;
+    int posTemp = 0;
+    int pos = 0;
+
+    int *vetorAuxiliar = (int*)(malloc(sizeof(int) * totalNumberOfLines));
+
+    while(pos < totalNumberOfLines){
+        temp = 1000000000;
+        for(int i = 0; i < totalNumberOfLines; i++){
+            if (vetorOfNumber[i] != -1){
+                if(vetorOfNumber[i] < temp){
+                    temp = vetorOfNumber[i];
+                    posTemp = i;
+                }
+            }
+        }
+        vetorOfNumber[posTemp] = -1;
+        vetorAuxiliar[pos] = temp;
+        pos++;
+    }
+
+    addInputNumbersToOutputFile(vetorAuxiliar,totalNumberOfLines,nameOfOutputFile);
 }

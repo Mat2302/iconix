@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 
                 totalNumberOfLines = contNumberOfLines(inputFile, contInputFile); // Variável que armazena o total de linhas nos arquivos de entrada
                 int *vector = vectorWithAllInputNumbers(inputFile, contInputFile, totalNumberOfLines); // Vetor que armazena todos os valores do arquivo de entrada
-                addInputNumbersToOutputFile(vector, totalNumberOfLines, optarg); // Adiciona os valores no vetor de saída
+                orderNumbers(vector, totalNumberOfLines, optarg); // Orderna os valores em ordem crescente
                 break;
             default:
                 printf("Linha de comando de entrada incorreta.\n");
