@@ -16,5 +16,7 @@ A arquitetura do projeto abaixo está dividido da seguinte maneira:
 2. Acesse a pasta do repositório.
 3. Utilize o comando ```make all``` para que sejam gerados todos os arquivos objeto e que o arquivo executável seja gerado.
 4. Utilize o comando desejado, segue um exemplo abaixo:
+   
   ```./mergesort 4 arq1.dat arq2.dat arq3.dat arq4.dat arq5.dat -o saida.dat```
-5. Caso queira, poderá utilizar o comando ```make clean``` para remover os arquivos objeto e o executável do computador, porém saiba que casao queira executar o projeto novamente, terá que seguir o passo 3 novamente.
+  
+1. Caso queira, poderá utilizar o comando ```make clean``` para remover os arquivos objeto e o executável do computador, porém saiba que casao queira executar o projeto novamente, terá que seguir o passo 3 novamente.
