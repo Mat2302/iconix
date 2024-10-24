@@ -15,22 +15,46 @@ int main(int argc, char *argv[])
     // Verificação de linha de comando correta e integração do projeto
     if (argc > 1)
     {
+        // Armazena o número de threads a partir da linha de comando
         numberOfThreads = atoi(argv[1]);
+        
+        // Verifica se o número de threads solicitadas está correto
         verifyNumberOfThreads(numberOfThreads);
-        while ((option = getopt(argc, argv, ":o:")) != -1) // Verifica o comando utilizado (-o)
+
+        // Verificação e execução da linha de comando
+        while ((option = getopt(argc, argv, ":o:")) != -1)
         {
             switch (option)
             {
             case 'o':
+                // Captura o nome do arquivo de saída
                 outputFile = (FILE *)optarg;
+                
+                // Cria um vetor dinamico com o nome dos arquivos de entrada
                 char **inputFile = saveNameOfInputFiles(&contInputFile, argc, argv, outputFile);
-                outputFile = fopen(optarg, "w+"); // Cria arquivo de saída com o nome digitado na linha de comando
+                
+                // Cria arquivo de saída com o nome digitado na linha de comando
+                outputFile = fopen(optarg, "w+"); 
+                
+                // Erro ao alocar memória
                 if (inputFile == NULL)
-                    return 1; // Erro ao alocar memória
+                {
+                    return 1;
+                }
 
-                totalNumberOfLines = contNumberOfLines(inputFile, contInputFile); // Variável que armazena o total de linhas nos arquivos de entrada
-                int *vector = vectorWithAllInputNumbers(inputFile, contInputFile, totalNumberOfLines); // Vetor que armazena todos os valores do arquivo de entrada
-                orderNumbers(vector, totalNumberOfLines, optarg); // Orderna os valores em ordem crescente
+                // Variável que armazena o total de linhas nos arquivos de entrada
+                totalNumberOfLines = contNumberOfLines(inputFile, contInputFile);
+                
+                // Vetor que armazena todos os valores do arquivo de entrada
+                int *vector = vectorWithAllInputNumbers(inputFile, contInputFile, totalNumberOfLines);
+                
+                // Orderna os valores em ordem crescente
+                orderNumbers(vector, totalNumberOfLines, optarg);
+                
+                // Libera memória alocada dinamicamente
+                free(inputFile);
+                free(vector);
+
                 break;
             default:
                 printf("Linha de comando de entrada incorreta.\n");

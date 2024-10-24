@@ -127,22 +127,29 @@ void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutput
     int posTemp = 0;
     int pos = 0;
 
-    int *vetorAuxiliar = (int*)(malloc(sizeof(int) * totalNumberOfLines));
+    int *auxVector = (int*)(malloc(totalNumberOfLines * sizeof(int)));
 
-    while(pos < totalNumberOfLines){
+    while(pos < totalNumberOfLines)
+    {
         temp = 1000000000;
-        for(int i = 0; i < totalNumberOfLines; i++){
-            if (vetorOfNumber[i] != -1){
-                if(vetorOfNumber[i] < temp){
+        for(int i = 0; i < totalNumberOfLines; i++)
+        {
+            if (vetorOfNumber[i] != -1)
+            {
+                if(vetorOfNumber[i] < temp)
+                {
                     temp = vetorOfNumber[i];
                     posTemp = i;
                 }
             }
         }
+        
         vetorOfNumber[posTemp] = -1;
-        vetorAuxiliar[pos] = temp;
+        auxVector[pos] = temp;
         pos++;
     }
 
-    addInputNumbersToOutputFile(vetorAuxiliar,totalNumberOfLines,nameOfOutputFile);
+    addInputNumbersToOutputFile(auxVector,totalNumberOfLines,nameOfOutputFile);
+
+    free(auxVector);
 }
