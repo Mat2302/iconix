@@ -3,6 +3,7 @@
 #include <getopt.h>              // Biblioteca para facilitar leitura por linha de comando
 #include <stdlib.h>              // Biblioteca para utilizar funções específicas
 #include <string.h>              // Biblioteca para utilizar funções de manipulação de string
+#include <pthread.h>
 
 int main(int argc, char *argv[])
 {
@@ -50,7 +51,40 @@ int main(int argc, char *argv[])
                 
                 // Orderna os valores em ordem crescente
                 orderNumbers(vector, totalNumberOfLines, optarg);
-                
+
+
+
+                // Apenas alguns testes
+                int inputFilesForEachThread = contInputFile / numberOfThreads;
+                int leftInputFiles = contInputFile % numberOfThreads;
+
+                pthread_t *threads = malloc(numberOfThreads * sizeof(pthread_t));
+                ThreadData *threadData = malloc(contInputFile * sizeof(ThreadData)); // Struct de cada thread, quantidade é o número informado pelo usuário
+
+                for(int i = 0; i < contInputFile; i++)
+                {
+                    threadData[i].inputFile = inputFile[i];
+                    threadData[i].threadId = i;
+
+                    if(pthread_create(&threads[i], NULL, processEachThread, &threadData[i]) != 0)
+                    {
+                        printf("Erro ao criar a thread %d\n", i);
+                        free(threads);
+                        free(threadData);
+                        return 1;
+                    }
+                }
+
+                for(int i = 0; i < contInputFile; i++)
+                {
+                    pthread_join(threads[i], NULL);
+                }
+
+                printf("Processamento concluído!\n");
+
+                free(threads);
+                free(threadData);
+
                 // Libera memória alocada dinamicamente
                 free(inputFile);
                 free(vector);

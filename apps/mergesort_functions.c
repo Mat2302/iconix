@@ -1,8 +1,9 @@
-#include "mergesort_functions.h" // Importando diretório header
-#include <stdio.h> // Biblioteca padrão de entrada/saída
-#include <stdlib.h> // Biblioteca para funções específicas
-#include <string.h> // Biblioteca para utilizar funções de manipulação de string
-#define TBF 1000 // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
+#include "mergesort_functions.h"    // Importando diretório header
+#include <stdio.h>                  // Biblioteca padrão de entrada/saída
+#include <stdlib.h>                 // Biblioteca para funções específicas
+#include <string.h>                 // Biblioteca para utilizar funções de manipulação de string
+#include <pthread.h>                // Biblioteca para utilizar threads
+#define TBF 1000                    // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
 
 // Função que verifica o número de threads requisitadas pelo usuário
 void verifyNumberOfThreads(int numberOfThreads)
@@ -121,7 +122,7 @@ void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char
 
 }
 
-//Ordernar valores em ordem crescente
+// Ordernar valores em ordem crescente
 void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutputFile){
     int temp = 1000000000;
     int posTemp = 0;
@@ -152,4 +153,30 @@ void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutput
     addInputNumbersToOutputFile(auxVector,totalNumberOfLines,nameOfOutputFile);
 
     free(auxVector);
+}
+
+// Atribui os arquivos de entrada a cada thread
+void *processEachThread(void *args)
+{
+    char buffer[TBF];
+    int numberOfLinesForEachFile = 0;
+    ThreadData *data = (ThreadData*) args;
+
+    FILE* arq = fopen(data->inputFile, "r");
+
+    if(arq == NULL)
+    {
+        fprintf(stderr, "Erro ao abrir o arquivo %s!\n", data->inputFile);
+        pthread_exit(NULL);
+    }
+
+
+    while (fgets(buffer, sizeof(buffer), arq)) {
+        numberOfLinesForEachFile++;
+    }
+    
+    printf("Thread %d: Arquivo %s tem %d linhas\n", data->threadId, data->inputFile, numberOfLinesForEachFile);
+    fclose(arq);
+    
+    pthread_exit(NULL);
 }
