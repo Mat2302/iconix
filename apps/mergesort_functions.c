@@ -5,6 +5,8 @@
 #include <pthread.h>             // Biblioteca para utilizar threads
 #define TBF 1000                 // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
 
+char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
+
 // Função que verifica o número de threads requisitadas pelo usuário
 void verifyNumberOfThreads(int numberOfThreads)
 {
@@ -17,7 +19,6 @@ void verifyNumberOfThreads(int numberOfThreads)
 // Função que verifica o número de linhas de um arquivo para declarar depois no malloc
 int contNumberOfLines(char **inputFile, int contInputFile)
 {
-    char buffer[TBF];      // Buffer temporário para armazenar o conteúdo de cada linha
     int numberOfLines = 0; // Variável para armazenar a quantidade de elementos lidos dos arquivos de entrada
 
     for (int i = 0; i < contInputFile; i++)
@@ -158,14 +159,30 @@ void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char *nameOfOutput
 // Atribui os arquivos de entrada a cada thread
 void *processEachThread(void *args)
 {
+    int numberOfLinesForEachFile = 0;
     ThreadData *data = (ThreadData *)args;
     int numberFiles = data->numberOfInputFiles;
 
     for(int i = 0; i < numberFiles; i++)
     {
         char *inputFileName = data->inputFile[i];
-        printf("Thread %d irá processar o arquivo %s!\n", data->threadId, inputFileName);
+
+        FILE* arq = fopen(inputFileName, "r");
+
+        if(arq == NULL)
+        {
+            printf("Erro ao abrir o arquivo!\n");
+            fclose(arq);
+        }
+
+        while(fgets(buffer, sizeof(buffer), arq) != NULL)
+        {
+            numberOfLinesForEachFile++;
+        }
+
+        printf("Thread %d irá processar o arquivo %s, que tem %d linhas!\n", data->threadId, inputFileName, numberOfLinesForEachFile);
     }
+
 
     return NULL;
 }
