@@ -52,38 +52,43 @@ int main(int argc, char *argv[])
                 // Orderna os valores em ordem crescente
                 orderNumbers(vector, totalNumberOfLines, optarg);
 
-
-
-                // Apenas alguns testes
-                int inputFilesForEachThread = contInputFile / numberOfThreads;
-                int leftInputFiles = contInputFile % numberOfThreads;
-
                 pthread_t *threads = malloc(numberOfThreads * sizeof(pthread_t));
-                ThreadData *threadData = malloc(contInputFile * sizeof(ThreadData)); // Struct de cada thread, quantidade é o número informado pelo usuário
+                ThreadData *threadData = malloc(numberOfThreads * sizeof(ThreadData)); // Struct de cada thread, quantidade é o número informado pelo usuário
 
-                for(int i = 0; i < contInputFile; i++)
+                // Distribuindo arquivos entre as threads
+                int filesPerThread = contInputFile / numberOfThreads;
+                int remaingFiles = contInputFile % numberOfThreads;
+                int currentIndex = 0;
+
+                // Determinar quantos arquivos a thread i vai processar
+                for(int i = 0; i < numberOfThreads; i++)
                 {
-                    threadData[i].inputFile = inputFile[i];
+                    int numberOfFilesForThisThread = filesPerThread + (i < remaingFiles ? 1 : 0);
+
+                    // Alocando memória para os índices
+                    threadData[i].inputFile = malloc(numberOfFilesForThisThread * sizeof(char));
+                    threadData[i].numberOfInputFiles = numberOfFilesForThisThread;
                     threadData[i].threadId = i;
 
+                    // Atribuindo nome dos arquivos à thread
+                    for(int j = 0; j < numberOfFilesForThisThread; j++)
+                    {
+                        threadData[i].inputFile[j] = inputFile[currentIndex++];
+                    }
+
+                    // Criando a thread
                     if(pthread_create(&threads[i], NULL, processEachThread, &threadData[i]) != 0)
                     {
-                        printf("Erro ao criar a thread %d\n", i);
-                        free(threads);
-                        free(threadData);
-                        return 1;
+                        printf("Erro ao criar threads!\n");
+                        free(threadData[i].inputFile);
                     }
                 }
 
-                for(int i = 0; i < contInputFile; i++)
+                for(int i = 0; i < numberOfThreads; i++)
                 {
                     pthread_join(threads[i], NULL);
+                    free(threadData[i].inputFile);
                 }
-
-                printf("Processamento concluído!\n");
-
-                free(threads);
-                free(threadData);
 
                 // Libera memória alocada dinamicamente
                 free(inputFile);

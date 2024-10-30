@@ -1,9 +1,9 @@
-#include "mergesort_functions.h"    // Importando diretório header
-#include <stdio.h>                  // Biblioteca padrão de entrada/saída
-#include <stdlib.h>                 // Biblioteca para funções específicas
-#include <string.h>                 // Biblioteca para utilizar funções de manipulação de string
-#include <pthread.h>                // Biblioteca para utilizar threads
-#define TBF 1000                    // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
+#include "mergesort_functions.h" // Importando diretório header
+#include <stdio.h>               // Biblioteca padrão de entrada/saída
+#include <stdlib.h>              // Biblioteca para funções específicas
+#include <string.h>              // Biblioteca para utilizar funções de manipulação de string
+#include <pthread.h>             // Biblioteca para utilizar threads
+#define TBF 1000                 // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
 
 // Função que verifica o número de threads requisitadas pelo usuário
 void verifyNumberOfThreads(int numberOfThreads)
@@ -17,28 +17,28 @@ void verifyNumberOfThreads(int numberOfThreads)
 // Função que verifica o número de linhas de um arquivo para declarar depois no malloc
 int contNumberOfLines(char **inputFile, int contInputFile)
 {
-    char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
+    char buffer[TBF];      // Buffer temporário para armazenar o conteúdo de cada linha
     int numberOfLines = 0; // Variável para armazenar a quantidade de elementos lidos dos arquivos de entrada
 
-    for(int i = 0; i < contInputFile; i++)
+    for (int i = 0; i < contInputFile; i++)
     {
         FILE *arq = fopen(inputFile[i], "r");
-        
-        if(arq == NULL)
+
+        if (arq == NULL)
         {
             printf("Erro ao abrir arquivo %s!\n", inputFile[i]);
             continue;
         }
 
         // Le cada linha do arquivo e incrementa em numberOfLines
-        while(fgets(buffer, sizeof(buffer), arq) != NULL)
+        while (fgets(buffer, sizeof(buffer), arq) != NULL)
         {
             numberOfLines++;
         }
 
         fclose(arq);
     }
-    
+
     return numberOfLines;
 }
 
@@ -46,23 +46,23 @@ int contNumberOfLines(char **inputFile, int contInputFile)
 char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *outputFile)
 {
     *contInputFile = 0;
-    char **inputFile = malloc((argc - 3) * sizeof(char*)); // Aloca memória de acordo com a quantidade de arquivos de entrada digitado na linha de comando
-    if(inputFile == NULL)
+    char **inputFile = malloc((argc - 3) * sizeof(char *)); // Aloca memória de acordo com a quantidade de arquivos de entrada digitado na linha de comando
+    if (inputFile == NULL)
     {
         printf("Erro ao alocar memória dinamicamente!\n");
         return NULL;
     }
 
-    for(int i = 2; i < argc; i++)
+    for (int i = 2; i < argc; i++)
     {
         // Ignora as posições que contenham como conteúdo "-o" e o arquivo de saida (saida.dat)
-        if((strcmp(argv[i], "-o") == 0) || (strcmp(argv[i], (char*) outputFile) == 0))
+        if ((strcmp(argv[i], "-o") == 0) || (strcmp(argv[i], (char *)outputFile) == 0))
         {
             continue;
         }
 
         // Caso encontre os arquivos de entrada (extensão .dat ou .txt), armazenará o nome no arquivo criado de forma dinâmica
-        if((strstr(argv[i], ".dat") != NULL) || (strstr(argv[i], ".txt") != NULL))
+        if ((strstr(argv[i], ".dat") != NULL) || (strstr(argv[i], ".txt") != NULL))
         {
             inputFile[*contInputFile] = argv[i];
             (*contInputFile)++;
@@ -74,7 +74,7 @@ char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *ou
 
 int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNumberOfLines)
 {
-    int index = 0; // Index que armazena os valores do vetor
+    int index = 0;                                                                // Index que armazena os valores do vetor
     int *vectorWithInputValues = (int *)malloc(totalNumberOfLines * sizeof(int)); // Vetor para alocar os valores de entrada
 
     if (vectorWithInputValues == NULL)
@@ -84,18 +84,18 @@ int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNum
     }
 
     // Loop para cada arquivo de entrada
-    for(int i = 0; i < contInputFile; i++)
+    for (int i = 0; i < contInputFile; i++)
     {
         FILE *arq = fopen(inputFile[i], "r");
-        
-        if(arq == NULL)
+
+        if (arq == NULL)
         {
             printf("Erro ao abrir o arquivo %s!\n", inputFile[i]);
             continue;
         }
 
         // Lê os valores dos arquivos de entrada e armazena no vetor dinâmico
-        while(fscanf(arq, "%d", &vectorWithInputValues[index]) == 1)
+        while (fscanf(arq, "%d", &vectorWithInputValues[index]) == 1)
         {
             index++;
         }
@@ -107,50 +107,50 @@ int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNum
 }
 
 // Adiciona os valores dos arquivos de entrada no arquivo de saida
-void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char* nameOfOutputFile)
+void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char *nameOfOutputFile)
 {
-    FILE* arq;
+    FILE *arq;
     arq = fopen(nameOfOutputFile, "w+");
 
     // Percorre o vetor e printa o valor no arquivo de saída
-    for(int i = 0; i < totalNumberOfLines; i++)
+    for (int i = 0; i < totalNumberOfLines; i++)
     {
         fprintf(arq, "%d\n", inputNumbers[i]);
     }
 
     fclose(arq);
-
 }
 
 // Ordernar valores em ordem crescente
-void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutputFile){
+void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char *nameOfOutputFile)
+{
     int temp = 1000000000;
     int posTemp = 0;
     int pos = 0;
 
-    int *auxVector = (int*)(malloc(totalNumberOfLines * sizeof(int)));
+    int *auxVector = (int *)(malloc(totalNumberOfLines * sizeof(int)));
 
-    while(pos < totalNumberOfLines)
+    while (pos < totalNumberOfLines)
     {
         temp = 1000000000;
-        for(int i = 0; i < totalNumberOfLines; i++)
+        for (int i = 0; i < totalNumberOfLines; i++)
         {
             if (vetorOfNumber[i] != -1)
             {
-                if(vetorOfNumber[i] < temp)
+                if (vetorOfNumber[i] < temp)
                 {
                     temp = vetorOfNumber[i];
                     posTemp = i;
                 }
             }
         }
-        
+
         vetorOfNumber[posTemp] = -1;
         auxVector[pos] = temp;
         pos++;
     }
 
-    addInputNumbersToOutputFile(auxVector,totalNumberOfLines,nameOfOutputFile);
+    addInputNumbersToOutputFile(auxVector, totalNumberOfLines, nameOfOutputFile);
 
     free(auxVector);
 }
@@ -158,25 +158,14 @@ void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char* nameOfOutput
 // Atribui os arquivos de entrada a cada thread
 void *processEachThread(void *args)
 {
-    char buffer[TBF];
-    int numberOfLinesForEachFile = 0;
-    ThreadData *data = (ThreadData*) args;
+    ThreadData *data = (ThreadData *)args;
+    int numberFiles = data->numberOfInputFiles;
 
-    FILE* arq = fopen(data->inputFile, "r");
-
-    if(arq == NULL)
+    for(int i = 0; i < numberFiles; i++)
     {
-        fprintf(stderr, "Erro ao abrir o arquivo %s!\n", data->inputFile);
-        pthread_exit(NULL);
+        char *inputFileName = data->inputFile[i];
+        printf("Thread %d irá processar o arquivo %s!\n", data->threadId, inputFileName);
     }
 
-
-    while (fgets(buffer, sizeof(buffer), arq)) {
-        numberOfLinesForEachFile++;
-    }
-    
-    printf("Thread %d: Arquivo %s tem %d linhas\n", data->threadId, data->inputFile, numberOfLinesForEachFile);
-    fclose(arq);
-    
-    pthread_exit(NULL);
+    return NULL;
 }

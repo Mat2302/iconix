@@ -1,12 +1,11 @@
 /* ***** Declaração de Funções ***** */
-#include <stdio.h> // Biblioteca padrão de i/o para usar arquivos FILE*
+#include <stdio.h>
 
 typedef struct 
 {
     int threadId;
-    char *inputFile;
-    int numberOfInputFile;
-    int sizeOfEachThreadVector;
+    char **inputFile;
+    int numberOfInputFiles;
 } ThreadData;
 
 void *processEachThread();
