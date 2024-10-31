@@ -4,12 +4,6 @@
 
 typedef struct 
 {
-    // int threadId;
-    // char **inputFile;
-    // int *temporaryVector;
-    // int numberOfInputFiles;
-    // int temporaryVectorSize;
-
     int threadId;
     int startIndex;
     int endIndex;
@@ -17,10 +11,11 @@ typedef struct
 } ThreadData;
 
 void *processEachThread();
+int compare(const void *a, const void *b);
 void verifyNumberOfThreads(int numberOfThreads);
+void orderNumbers(int *vectorToChange, int size);
 int* addAllVector(int* vector, int totalNumberOfLines);
 int contNumberOfLines(char **inputFiles, int contInputFile);
-int *orderNumbers(int *vetorOfNumber, int startIndex, int endIndex);
 char **saveNameOfInputFiles(int *contInputFile, int argc, char *argv[], FILE *outputFile);
 int *vectorWithAllInputNumbers(char **inputFile, int contInputFile, int totalNumberOfLines);
 void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char* nameOfOutputFile);

@@ -125,44 +125,49 @@ void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char
     fclose(arq);
 }
 
-// Ordernar valores em ordem crescente
-int *orderNumbers(int *vetorOfNumber, int startIndex, int endIndex)
+int compare(const void *a, const void *b)
 {
-    printf("pos inic %d, pos saida %d\n",startIndex, endIndex);
-    int temp = 1000000000;
-    int posTemp = 0;
-    int pos = startIndex;
-    int qtdNumbers = endIndex - startIndex;
+    return (*(int *)a - *(int *)b);
+}
 
-    int *auxVector = (int *)(malloc(qtdNumbers * sizeof(int)));
+// Ordernar valores em ordem crescente
+void orderNumbers(int *vectorToChange, int size)
+{
+    qsort(vectorToChange, size, sizeof(int), compare);
+    
+    // printf("pos inic %d, pos saida %d\n",startIndex, endIndex);
+    // int temp = 1000000000;
+    // int posTemp = 0;
+    // int pos = startIndex;
+    // int qtdNumbers = endIndex - startIndex;
 
-    while (pos < endIndex)
-    {
-        temp = 1000000000;
-        for (int i = 0; i < endIndex; i++)
-        {
-            if (vetorOfNumber[i] != -1)
-            {
-                if (vetorOfNumber[i] < temp)
-                {
-                    temp = vetorOfNumber[i];
-                    posTemp = i;
-                }
-            }
-        }
+    // int *auxVector = (int *)(malloc(qtdNumbers * sizeof(int)));
 
-        vetorOfNumber[posTemp] = -1;
-        auxVector[pos] = temp;
-        pos++;
+    // while (pos < endIndex)
+    // {
+    //     temp = 1000000000;
+    //     for (int i = 0; i < endIndex; i++)
+    //     {
+    //         if (vetorOfNumber[i] != -1)
+    //         {
+    //             if (vetorOfNumber[i] < temp)
+    //             {
+    //                 temp = vetorOfNumber[i];
+    //                 posTemp = i;
+    //             }
+    //         }
+    //     }
 
-    }
-    for (int i = 0; i < qtdNumbers; i++){
-        printf("%d\n",auxVector[i]);
-    }
+    //     vetorOfNumber[posTemp] = -1;
+    //     auxVector[pos] = temp;
+    //     pos++;
+
+    // }
+    // for (int i = 0; i < qtdNumbers; i++){
+    //     printf("%d\n",auxVector[i]);
+    // }
 
     // addInputNumbersToOutputFile(auxVector, nameOfOutputFile);
-
-    return auxVector;
 }
 
 // Atribui os arquivos de entrada a cada thread
@@ -171,34 +176,18 @@ void *processEachThread(void *args)
     ThreadData *data = (ThreadData *)args;
 
     // Informações sobre processamento
-    printf("Thread %d está processando o índice %d até %d\n", data->threadId, data->startIndex, data->endIndex);
-    int *vector = data->temporaryVector;
+    // printf("Thread %d está processando o índice %d até %d\n", data->threadId, data->startIndex, data->endIndex);
 
     int totalSize = data->endIndex - data->startIndex;
 
-    pthread_mutex_lock(&mutex);
-
-    int *teste = orderNumbers(vector, data->startIndex, data->endIndex);
-
-    pthread_mutex_unlock(&mutex);
-
-    // Teste de impressão
-    // FILE *file = fopen("saida.dat", "a");
-    // if (file == NULL)
-    // {
-    //     perror("Erro ao abrir o arquivo de saída");
-    //     pthread_exit(NULL);
-    // }
-
-    // // Escreve os valores no arquivo
-    // for (int i = 0; i < totalSize; i++)
-    // {
-    //     fprintf(file, "%d\n", vector[i]);
-    // }
-
-    // // Fecha o arquivo
-    // fclose(file);
+    qsort(data->temporaryVector, totalSize, sizeof(int), compare);
     
+    printf("Sub-vetor ordenado pela thread %d: ", data->threadId);
+    for(int i = 0; i < totalSize; i++)
+    {
+        printf("%d ", data->temporaryVector[i]);
+    }
+
     printf("\n");
 
     pthread_exit(NULL);
