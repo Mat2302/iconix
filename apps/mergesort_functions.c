@@ -7,6 +7,9 @@
 
 char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
 
+int *totalVector = NULL;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 // Função que verifica o número de threads requisitadas pelo usuário
 void verifyNumberOfThreads(int numberOfThreads)
 {
@@ -123,18 +126,20 @@ void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char
 }
 
 // Ordernar valores em ordem crescente
-void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char *nameOfOutputFile)
+int *orderNumbers(int *vetorOfNumber, int startIndex, int endIndex)
 {
+    printf("pos inic %d, pos saida %d\n",startIndex, endIndex);
     int temp = 1000000000;
     int posTemp = 0;
-    int pos = 0;
+    int pos = startIndex;
+    int qtdNumbers = endIndex - startIndex;
 
-    int *auxVector = (int *)(malloc(totalNumberOfLines * sizeof(int)));
+    int *auxVector = (int *)(malloc(qtdNumbers * sizeof(int)));
 
-    while (pos < totalNumberOfLines)
+    while (pos < endIndex)
     {
         temp = 1000000000;
-        for (int i = 0; i < totalNumberOfLines; i++)
+        for (int i = 0; i < endIndex; i++)
         {
             if (vetorOfNumber[i] != -1)
             {
@@ -149,40 +154,52 @@ void orderNumbers(int *vetorOfNumber, int totalNumberOfLines, char *nameOfOutput
         vetorOfNumber[posTemp] = -1;
         auxVector[pos] = temp;
         pos++;
+
+    }
+    for (int i = 0; i < qtdNumbers; i++){
+        printf("%d\n",auxVector[i]);
     }
 
-    addInputNumbersToOutputFile(auxVector, totalNumberOfLines, nameOfOutputFile);
+    // addInputNumbersToOutputFile(auxVector, nameOfOutputFile);
 
-    free(auxVector);
+    return auxVector;
 }
 
 // Atribui os arquivos de entrada a cada thread
 void *processEachThread(void *args)
 {
-    int numberOfLinesForEachFile = 0;
     ThreadData *data = (ThreadData *)args;
-    int numberFiles = data->numberOfInputFiles;
 
-    for(int i = 0; i < numberFiles; i++)
-    {
-        char *inputFileName = data->inputFile[i];
+    // Informações sobre processamento
+    printf("Thread %d está processando o índice %d até %d\n", data->threadId, data->startIndex, data->endIndex);
+    int *vector = data->temporaryVector;
 
-        FILE* arq = fopen(inputFileName, "r");
+    int totalSize = data->endIndex - data->startIndex;
 
-        if(arq == NULL)
-        {
-            printf("Erro ao abrir o arquivo!\n");
-            fclose(arq);
-        }
+    pthread_mutex_lock(&mutex);
 
-        while(fgets(buffer, sizeof(buffer), arq) != NULL)
-        {
-            numberOfLinesForEachFile++;
-        }
+    int *teste = orderNumbers(vector, data->startIndex, data->endIndex);
 
-        printf("Thread %d irá processar o arquivo %s, que tem %d linhas!\n", data->threadId, inputFileName, numberOfLinesForEachFile);
-    }
+    pthread_mutex_unlock(&mutex);
 
+    // Teste de impressão
+    // FILE *file = fopen("saida.dat", "a");
+    // if (file == NULL)
+    // {
+    //     perror("Erro ao abrir o arquivo de saída");
+    //     pthread_exit(NULL);
+    // }
 
-    return NULL;
+    // // Escreve os valores no arquivo
+    // for (int i = 0; i < totalSize; i++)
+    // {
+    //     fprintf(file, "%d\n", vector[i]);
+    // }
+
+    // // Fecha o arquivo
+    // fclose(file);
+    
+    printf("\n");
+
+    pthread_exit(NULL);
 }
