@@ -3,21 +3,10 @@
 #include <stdlib.h>              // Biblioteca para funções específicas
 #include <string.h>              // Biblioteca para utilizar funções de manipulação de string
 #include <pthread.h>             // Biblioteca para utilizar threads
+#include <time.h>                // Biblioteca para cálculo de tempo
 #define TBF 1000                 // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
 
 char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
-
-int *totalVector = NULL;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-
-// Função que verifica o número de threads requisitadas pelo usuário
-void verifyNumberOfThreads(int numberOfThreads)
-{
-    if ((numberOfThreads != 2) && (numberOfThreads != 4) && (numberOfThreads != 8))
-    {
-        printf("Número de threads requisitados incorreto, os valores de threads disponíveis são: 2, 4 ou 8.\n");
-    }
-}
 
 // Função que verifica o número de linhas de um arquivo para declarar depois no malloc
 int contNumberOfLines(char **inputFile, int contInputFile)
@@ -125,49 +114,10 @@ void addInputNumbersToOutputFile(int *inputNumbers, int totalNumberOfLines, char
     fclose(arq);
 }
 
+// Função auxiliar para qsort
 int compare(const void *a, const void *b)
 {
     return (*(int *)a - *(int *)b);
-}
-
-// Ordernar valores em ordem crescente
-void orderNumbers(int *vectorToChange, int size)
-{
-    qsort(vectorToChange, size, sizeof(int), compare);
-    
-    // printf("pos inic %d, pos saida %d\n",startIndex, endIndex);
-    // int temp = 1000000000;
-    // int posTemp = 0;
-    // int pos = startIndex;
-    // int qtdNumbers = endIndex - startIndex;
-
-    // int *auxVector = (int *)(malloc(qtdNumbers * sizeof(int)));
-
-    // while (pos < endIndex)
-    // {
-    //     temp = 1000000000;
-    //     for (int i = 0; i < endIndex; i++)
-    //     {
-    //         if (vetorOfNumber[i] != -1)
-    //         {
-    //             if (vetorOfNumber[i] < temp)
-    //             {
-    //                 temp = vetorOfNumber[i];
-    //                 posTemp = i;
-    //             }
-    //         }
-    //     }
-
-    //     vetorOfNumber[posTemp] = -1;
-    //     auxVector[pos] = temp;
-    //     pos++;
-
-    // }
-    // for (int i = 0; i < qtdNumbers; i++){
-    //     printf("%d\n",auxVector[i]);
-    // }
-
-    // addInputNumbersToOutputFile(auxVector, nameOfOutputFile);
 }
 
 // Atribui os arquivos de entrada a cada thread
@@ -175,20 +125,42 @@ void *processEachThread(void *args)
 {
     ThreadData *data = (ThreadData *)args;
 
-    // Informações sobre processamento
-    // printf("Thread %d está processando o índice %d até %d\n", data->threadId, data->startIndex, data->endIndex);
+    struct timespec start, end;
 
-    int totalSize = data->endIndex - data->startIndex;
+    // Captura o tempo de inicio de execução da thread
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
-    qsort(data->temporaryVector, totalSize, sizeof(int), compare);
+    // Ordenar cada vetor em ordem crescente
+    qsort(data->temporaryVector, data->totalSize, sizeof(int), compare);
+
+    // Captura o tempo de término de execução da thread
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    // Calcula tempo de execução em segundos
+    double totalTime = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+
+    // Imprimindo o tempo na tela
+    printf("Thread %d executou em %.9f segundos\n", data->threadId, totalTime);
     
-    printf("Sub-vetor ordenado pela thread %d: ", data->threadId);
-    for(int i = 0; i < totalSize; i++)
+    pthread_exit(NULL);
+}
+
+// É O FIM!!
+void orderOutputVector(ThreadData *threadData, int numberOfThreads, int totalNumberOfLines, char *outputFile)
+{
+    int *vector = (int *)(malloc(totalNumberOfLines*sizeof(int)));
+    int pos = 0; 
+
+
+    for (int i = 0; i < numberOfThreads; i++)
     {
-        printf("%d ", data->temporaryVector[i]);
+        for (int j = 0; j < threadData[i].totalSize; j++)
+        {
+            vector[pos++] = threadData[i].temporaryVector[j];
+        }
     }
 
-    printf("\n");
+    qsort(vector, totalNumberOfLines, sizeof(int), compare);
 
-    pthread_exit(NULL);
+    addInputNumbersToOutputFile(vector, totalNumberOfLines, outputFile);
 }
