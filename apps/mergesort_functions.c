@@ -4,13 +4,13 @@
 #include <string.h>              // Biblioteca para utilizar funções de manipulação de string
 #include <pthread.h>             // Biblioteca para utilizar threads
 #include <time.h>                // Biblioteca para cálculo de tempo
-#define TBF 1000                 // Define tamanho base para o buffer(quantidade de caracteres em uma linha)
-
-char buffer[TBF]; // Buffer temporário para armazenar o conteúdo de cada linha
 
 // Função que verifica o número de linhas de um arquivo para declarar depois no malloc
 int contNumberOfLines(char **inputFile, int contInputFile)
 {
+    int bufferSizeAllocation = 5000;
+    char *buffer = malloc(bufferSizeAllocation * sizeof(int));
+
     int numberOfLines = 0; // Variável para armazenar a quantidade de elementos lidos dos arquivos de entrada
 
     for (int i = 0; i < contInputFile; i++)
@@ -31,6 +31,8 @@ int contNumberOfLines(char **inputFile, int contInputFile)
 
         fclose(arq);
     }
+
+    free(buffer);
 
     return numberOfLines;
 }
